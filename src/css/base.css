@@ -1,0 +1,207 @@
+/*
+ * What every Staackyz app shares whatever its colour, layout tokens, the elevation, focus, scrollbar and selection.
+ * Import a theme before this file and the tailwind layers after it, motion.css comes last, see the README.
+ */
+@layer base {
+    :root {
+        /* Zero by default, AppShell raises it where the top bar exists */
+        --topbar-h: 0rem;
+        /* Only the phone navigation bar raises it, and the home indicator is inside the number */
+        --bottomnav-h: env(safe-area-inset-bottom);
+        /* The screen edge padding, shrinking with the width on the phone and fixed from md up */
+        --screen-pad: clamp(0.625rem, 3.4vw, 1rem);
+        /* 100vh lies on a phone until someone scrolls */
+        --screen-h: 100vh;
+
+        /* The fill of a button that changes something important, one value for both themes, white label at AA */
+        /* emerald-700, entry, approve, receive, bring back */
+        --positive: 162.9 93.5% 24.3%;
+        --positive-foreground: 0 0% 100%;
+        --positive-hover: 163.1 88.1% 19.8%;
+        /* red-600, exit, cancel, refuse, what does not come back */
+        --negative: 0 72.2% 50.6%;
+        --negative-foreground: 0 0% 100%;
+        --negative-hover: 0 73.7% 41.8%;
+        /* amber-700, archive and what leaves the lists but comes back */
+        --caution: 26 90.5% 37.1%;
+        --caution-foreground: 0 0% 100%;
+        --caution-hover: 22.7 82.5% 31.4%;
+
+        /* The one elevation of everything that floats over content */
+        --elevation-highlight: inset 0 1px 0 hsl(0 0% 100% / 0.06);
+        --elevation-shadow: 0 2px 6px -2px rgb(0 0 0 / 0.35), 0 36px 90px -18px rgb(0 0 0 / 0.7);
+        --elevation-shadow-sm: 0 1px 3px -1px rgb(0 0 0 / 0.3), 0 12px 32px -8px rgb(0 0 0 / 0.45);
+        --elevation-float: var(--elevation-highlight), var(--elevation-shadow);
+        --elevation-float-sm: var(--elevation-highlight), var(--elevation-shadow-sm);
+
+        /* The item the person came back from, a brief flash of the selection fill */
+        --row-selected-alpha: 0.14;
+        --row-selected: hsl(var(--primary) / var(--row-selected-alpha));
+        --row-selected-edge: hsl(var(--primary));
+    }
+
+    /* The ring is a shade off the text colour, so it is declared again wherever the theme changes --foreground */
+    :root,
+    .theme-light,
+    .dark {
+        --elevation-ring: hsl(var(--foreground) / 0.14);
+    }
+
+    .dark {
+        --row-selected-alpha: 0.22;
+    }
+
+    @supports (height: 100dvh) {
+        :root {
+            --screen-h: 100dvh;
+        }
+    }
+
+    @media (min-width: 768px) {
+        :root {
+            --screen-pad: 1.5rem;
+        }
+    }
+
+    /* The bar only exists under md, and the shell that carries it is the only place the height is not zero */
+    @media (max-width: 767.98px) {
+        .has-bottom-nav {
+            --bottomnav-h: calc(4rem + env(safe-area-inset-bottom));
+        }
+    }
+
+    * {
+        @apply border-border;
+    }
+
+    body {
+        @apply bg-background text-foreground;
+    }
+
+    /* The system blue used to land on top of the palette every time a title was dragged over */
+    ::selection {
+        background-color: hsl(var(--primary) / 0.25);
+    }
+}
+
+/* Every surface that floats over content wears one of these two, and nothing else, no shadow-md, shadow-lg or shadow-xl beside them */
+@layer utilities {
+    .elevation-float,
+    .elevation-float-sm {
+        border-color: var(--elevation-ring);
+    }
+
+    .elevation-float {
+        box-shadow: var(--elevation-float);
+    }
+
+    .elevation-float-sm {
+        box-shadow: var(--elevation-float-sm);
+    }
+}
+
+/* Furniture of the interface, never the customer's data, a screen title is not something anyone copies */
+@layer components {
+    .ui-label {
+        -webkit-user-select: none;
+        user-select: none;
+    }
+}
+
+/* Focus never shows as an outline or a ring, it is the hover fill on a control and a stronger edge on a field */
+@layer base {
+    :focus,
+    :focus-visible {
+        outline: none;
+    }
+
+    /* :where keeps it at one class of weight, so any bg utility on the element wins and its own focus-visible:bg-* decides */
+    /* Scoped to what takes a tab, a radix pane with tabindex -1 would otherwise be filled when a dialog opens */
+    :where(
+            a[href],
+            button,
+            summary,
+            [role='button'],
+            [role='link'],
+            [role='menuitem'],
+            [role='menuitemcheckbox'],
+            [role='menuitemradio'],
+            [role='option'],
+            [role='tab'],
+            [tabindex='0']
+        ):focus-visible {
+        background-color: hsl(var(--accent));
+    }
+
+    :where(input:not([type='checkbox'], [type='radio'], [type='range']), select, textarea, [contenteditable='true']):focus-visible {
+        border-color: hsl(var(--input-focus));
+        background-color: hsl(var(--field-focus));
+    }
+}
+
+/* Thin scrollbar with a transparent track, in place of the system one */
+@layer base {
+    @supports selector(::-webkit-scrollbar) {
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-track,
+        ::-webkit-scrollbar-track-piece {
+            background: transparent;
+            box-shadow: none;
+            border: 0;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: hsl(var(--muted-foreground) / 0.3);
+            border-radius: 9999px;
+            border: 2px solid transparent;
+            background-clip: padding-box;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: hsl(var(--muted-foreground) / 0.5);
+            background-clip: padding-box;
+        }
+
+        ::-webkit-scrollbar-corner {
+            background: transparent;
+        }
+    }
+
+    /* Firefox has no ::-webkit-scrollbar */
+    @supports not selector(::-webkit-scrollbar) {
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: hsl(var(--muted-foreground) / 0.4) transparent;
+        }
+    }
+
+    /* Chromium paints autofilled fields blue and ignores autocomplete=off, the inset shadow gives the theme back */
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus,
+    input:-webkit-autofill:active,
+    textarea:-webkit-autofill,
+    select:-webkit-autofill {
+        -webkit-box-shadow: 0 0 0 1000px hsl(var(--background)) inset !important;
+        box-shadow: 0 0 0 1000px hsl(var(--background)) inset !important;
+        -webkit-text-fill-color: hsl(var(--foreground)) !important;
+        caret-color: hsl(var(--foreground));
+        transition: background-color 9999s ease-in-out 0s;
+    }
+}
+
+/* A list that scrolls with no bar, by wheel, touch and keyboard as before */
+.scrollbar-hidden,
+.screen-scroll {
+    scrollbar-width: none;
+}
+
+.scrollbar-hidden::-webkit-scrollbar,
+.screen-scroll::-webkit-scrollbar {
+    display: none;
+}

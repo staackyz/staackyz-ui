@@ -1,0 +1,94 @@
+/*
+ * The emerald theme, the Staackyz Life palette value for value.
+ * theme-light carries the light set onto an element inside a dark screen.
+ * Measured contrast of every pair in the README, the source is the Life docs/reference/identity.md.
+ */
+@layer base {
+    :root,
+    .theme-light {
+        /* #EAF3EE */
+        --background: 146.7 27.3% 93.5%;
+        --foreground: 144 20% 4.9%;
+        /* White cards on the pale page, the hairline border carries the edge */
+        --card: 0 0% 100%;
+        --card-foreground: 144 20% 4.9%;
+        --field: 0 0% 100%;
+        --popover: 0 0% 100%;
+        --popover-foreground: 144 20% 4.9%;
+        /* #15803D, the brand #16A34A darkened so a white label reaches 5.02:1 */
+        --primary: 142.4 71.8% 29.2%;
+        --primary-foreground: 0 0% 100%;
+        /* #DCFCE7 */
+        --secondary: 140.6 84.2% 92.5%;
+        --secondary-foreground: 143.8 61.2% 20.2%;
+        --muted: 145 24% 90.2%;
+        --muted-foreground: 145.7 12.4% 33.1%;
+        --accent: 140.6 84.2% 92.5%;
+        --accent-foreground: 143.8 61.2% 20.2%;
+        --destructive: 0 84.2% 60.2%;
+        --destructive-foreground: 0 0% 98%;
+        --destructive-soft: 0 93.3% 94.1%;
+        --destructive-strong: 0 73.7% 41.8%;
+        /* Teal, not green, success sits 31 degrees of hue away from the green primary and always comes with a check icon */
+        --success: 173.4 80.4% 40%;
+        --success-foreground: 178.6 84.3% 10%;
+        --success-soft: 167.2 85.5% 89.2%;
+        --success-strong: 175.3 77.4% 26.1%;
+        --warning: 37.7 92.1% 50.2%;
+        --warning-foreground: 228.6 84% 4.9%;
+        --warning-soft: 48 96.5% 88.8%;
+        --warning-strong: 26 90.5% 37.1%;
+        --info: 217.2 91.2% 59.8%;
+        --info-foreground: 0 0% 100%;
+        --info-soft: 214.3 94.6% 92.7%;
+        --info-strong: 224.3 76.3% 48%;
+        --border: 145.7 18.4% 85.1%;
+        /* #7D9185, a field edge reaches 3.35:1 over white, the card hairline is decoration and stays light */
+        --input: 144 8.3% 52.9%;
+        /* A focused field takes the primary edge, as the Life fields did */
+        --input-focus: 142.4 71.8% 29.2%;
+        --field-focus: 0 0% 100%;
+        --ring: 142.4 71.8% 29.2%;
+        --radius: 0.625rem;
+    }
+
+    .dark {
+        /* The #071A12 seal is the page, card and muted step up from it in the same hue */
+        --background: 154.7 57.6% 6.5%;
+        --foreground: 0 0% 98%;
+        --card: 148.6 41.2% 10%;
+        --card-foreground: 0 0% 98%;
+        --field: 154.7 57.6% 6.5%;
+        --popover: 148.6 41.2% 10%;
+        --popover-foreground: 0 0% 98%;
+        --primary: 141.9 69.2% 58%;
+        --primary-foreground: 144.9 80.4% 10%;
+        --secondary: 153.3 37% 14.3%;
+        --secondary-foreground: 0 0% 98%;
+        --muted: 153.3 37% 14.3%;
+        --muted-foreground: 146.4 12.6% 61%;
+        --accent: 153.3 37% 14.3%;
+        --accent-foreground: 0 0% 98%;
+        --destructive: 0 84.2% 60.2%;
+        --destructive-foreground: 0 0% 98%;
+        --destructive-soft: 0 74.7% 15.5%;
+        --destructive-strong: 0 96.3% 89.4%;
+        --success: 173.4 80.4% 40%;
+        --success-foreground: 178.6 84.3% 10%;
+        --success-soft: 178.6 84.3% 10%;
+        --success-strong: 168.4 83.8% 78.2%;
+        --warning: 37.7 92.1% 50.2%;
+        --warning-foreground: 228.6 84% 4.9%;
+        --warning-soft: 20.9 91.7% 14.1%;
+        --warning-strong: 48 96.6% 76.7%;
+        --info: 217.2 91.2% 59.8%;
+        --info-foreground: 0 0% 100%;
+        --info-soft: 226.2 57% 21%;
+        --info-strong: 213.3 96.9% 87.3%;
+        --border: 150 31.8% 17.3%;
+        --input: 150 31.8% 17.3%;
+        --input-focus: 141.9 69.2% 58%;
+        --field-focus: 148.6 41.2% 10%;
+        --ring: 141.9 69.2% 58%;
+    }
+}

@@ -1,0 +1,71 @@
+{
+    "name": "@staackyz/ui",
+    "version": "0.1.0",
+    "description": "The design system of the Staackyz family: theme tokens, motion vocabulary, shadcn-vue primitives and the product shell",
+    "private": true,
+    "license": "UNLICENSED",
+    "type": "module",
+    "exports": {
+        ".": "./src/index.ts",
+        "./charts": "./src/charts/index.ts",
+        "./tailwind-preset": "./tailwind-preset.js",
+        "./css/*": "./src/css/*"
+    },
+    "files": [
+        "src",
+        "tailwind-preset.js"
+    ],
+    "sideEffects": [
+        "*.css",
+        "*.vue"
+    ],
+    "scripts": {
+        "test": "node --import ./tests/support/resolve-ts.mjs --test \"tests/*.test.mjs\"",
+        "types:check": "vue-tsc --noEmit",
+        "format": "prettier --write src tests tailwind-preset.js",
+        "format:check": "prettier --check src tests tailwind-preset.js",
+        "lint:check": "eslint . --max-warnings 0",
+        "ci": "npm run format:check && npm run lint:check && npm run types:check && npm test"
+    },
+    "peerDependencies": {
+        "@vueuse/core": "12.7.0",
+        "class-variance-authority": "0.7.1",
+        "clsx": "2.1.1",
+        "echarts": "6.1.0",
+        "lucide-vue-next": "0.468.0",
+        "reka-ui": "2.10.4",
+        "tailwind-merge": "2.6.0",
+        "tailwindcss": "3.4.17",
+        "tailwindcss-animate": "1.0.7",
+        "vue": "3.5.42"
+    },
+    "peerDependenciesMeta": {
+        "echarts": {
+            "optional": true
+        }
+    },
+    "devDependencies": {
+        "@eslint/js": "9.27.0",
+        "@types/node": "22.13.5",
+        "@vue/eslint-config-typescript": "14.4.0",
+        "@vueuse/core": "12.7.0",
+        "class-variance-authority": "0.7.1",
+        "clsx": "2.1.1",
+        "echarts": "6.1.0",
+        "eslint": "9.27.0",
+        "eslint-config-prettier": "10.0.1",
+        "eslint-plugin-vue": "9.32.0",
+        "lucide-vue-next": "0.468.0",
+        "prettier": "3.5.2",
+        "prettier-plugin-organize-imports": "4.1.0",
+        "prettier-plugin-tailwindcss": "0.6.11",
+        "reka-ui": "2.10.4",
+        "tailwind-merge": "2.6.0",
+        "tailwindcss": "3.4.17",
+        "tailwindcss-animate": "1.0.7",
+        "typescript": "5.7.3",
+        "typescript-eslint": "8.48.0",
+        "vue": "3.5.42",
+        "vue-tsc": "2.2.2"
+    }
+}

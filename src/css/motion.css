@@ -1,0 +1,815 @@
+/*
+ * The motion vocabulary of the Staackyz apps. Duration, curve and scale come from these tokens, never from a number on the screen.
+ * Import it after the tailwind utilities, the press rules relist colours because they land after transition-colors.
+ */
+
+:root {
+    /* Three durations, the press, the arrival and the emphasis */
+    --mov-curto: 130ms;
+    --mov-medio: 220ms;
+    --mov-longo: 420ms;
+
+    /* Two curves and no spring curve, arriving and going back along the same path */
+    --mov-chegada: cubic-bezier(0.22, 1, 0.36, 1);
+    --mov-volta: cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* Three scales, and scale is transform so it runs on the GPU */
+    --mov-nasce: 0.97;
+    --mov-aperta: 0.97;
+    --mov-cresce: 1.04;
+
+    /* A whole screen arriving, where the 3% of an element would blur a page of text */
+    --mov-nasce-tela: 0.985;
+
+    /* The cascade step, and the wider one for tall items since separation is relative to size */
+    --mov-passo: 25ms;
+    --mov-passo-largo: 45ms;
+
+    /* How far a card rises on pointer, and the room a scroller owes the row above it */
+    --mov-lift: 2px;
+
+    /* A loop and not a transition */
+    --mov-respira: 1.6s;
+
+    /* For the number that gets read instead of watched */
+    --mov-conta: 1100ms;
+
+    /* How far what is still valid fades while it is replaced */
+    --mov-esmaece: 0.6;
+
+    /* The scale of small things, 4% of a 20px icon is invisible */
+    --mov-cresce-mini: 1.12;
+
+    /* Element tokens the screen writes, where a box grows from and how far a notice travels */
+    --mov-origem: top;
+    --mov-borda: 12px;
+
+    /* How far a floating box travels from its trigger, it slides instead of growing so it lands with no snap */
+    --mov-desliza: 10px;
+
+    /* A large surface crossing more than about 150px, one factor over the pair that already exists */
+    --mov-amplitude: 1.6;
+    --mov-amplo: calc(var(--mov-medio) * var(--mov-amplitude));
+    --mov-amplo-saida: calc(var(--mov-curto) * var(--mov-amplitude));
+
+    /* Ring colour as a token so one keyframe serves more than one reason */
+    --destaque-cor: var(--primary);
+}
+
+/* backwards and not both, forwards would beat the leave transition inside a TransitionGroup */
+.mov-entra {
+    animation: mov-entra var(--mov-medio) var(--mov-chegada) backwards;
+    animation-delay: calc(var(--mov-i, 0) * var(--mov-passo));
+}
+
+@keyframes mov-entra {
+    from {
+        opacity: 0;
+        transform: translateY(10px) scale(var(--mov-nasce));
+    }
+}
+
+/* Opacity only, for a block born inside text that is still running */
+.mov-entra-leve {
+    animation: mov-entra-leve var(--mov-medio) var(--mov-chegada) backwards;
+}
+
+@keyframes mov-entra-leve {
+    from {
+        opacity: 0;
+    }
+}
+
+/* The tail of the cascade, past the cap and still not a snap */
+.mov-entra-fim {
+    animation: mov-entra-leve var(--mov-curto) var(--mov-chegada) backwards;
+    animation-delay: calc(var(--mov-i, 0) * var(--mov-passo));
+}
+
+/* The same entrance for rows that share a border with the neighbour */
+.mov-entra-linha {
+    animation: mov-entra-leve var(--mov-medio) var(--mov-chegada) both;
+    animation-delay: calc(var(--mov-i, 0) * var(--mov-passo));
+}
+
+/* Once per node, playEntrancesOnce marks it, and :where keeps every later animation class winning by order */
+.mov-entra:where([data-entered]),
+.mov-entra-leve:where([data-entered]),
+.mov-entra-fim:where([data-entered]),
+.mov-entra-linha:where([data-entered]) {
+    animation-name: none;
+}
+
+/* Press response, and the transition relists colours because this rule lands after transition-colors */
+.mov-toque {
+    transition:
+        transform var(--mov-curto) var(--mov-volta),
+        background-color var(--mov-curto) var(--mov-volta),
+        border-color var(--mov-curto) var(--mov-volta),
+        color var(--mov-curto) var(--mov-volta),
+        box-shadow var(--mov-curto) var(--mov-volta);
+}
+
+.mov-toque:active {
+    transform: scale(var(--mov-aperta));
+}
+
+/* The lift sits behind hover, a phone has no hover and would keep the card lifted forever */
+.mov-cartao {
+    transition:
+        transform var(--mov-curto) var(--mov-volta),
+        box-shadow var(--mov-curto) var(--mov-volta),
+        border-color var(--mov-curto) var(--mov-volta),
+        background-color var(--mov-curto) var(--mov-volta);
+}
+
+/* No press shrink on a card, a card shrinking slid its own buttons out from under the pointer */
+@media (hover: hover) and (pointer: fine) {
+    .mov-cartao:hover {
+        transform: translateY(calc(var(--mov-lift) * -1));
+    }
+}
+
+.mov-cartao:focus-visible {
+    border-color: hsl(var(--input-focus));
+}
+
+/* A scroller holding lifting cards owes the first row the lift above it, and the negative margin keeps the layout where it was */
+.card-room {
+    margin-top: calc(var(--mov-lift) * -2);
+    padding-top: calc(var(--mov-lift) * 2);
+}
+
+/* The icon alone answers where the whole card must not move */
+.mov-icone {
+    transition:
+        transform var(--mov-curto) var(--mov-volta),
+        color var(--mov-curto) var(--mov-volta),
+        opacity var(--mov-curto) var(--mov-volta);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .mov-icone:hover,
+    .group:hover .mov-icone,
+    :where(a, button, [role='button'], summary):hover .mov-icone {
+        transform: scale(var(--mov-cresce-mini));
+    }
+}
+
+/* Motion off, colour still answers, because colour is what confirms the click landed */
+@media (prefers-reduced-motion: reduce) {
+    .mov-entra,
+    .mov-entra-leve,
+    .mov-entra-fim,
+    .mov-entra-linha {
+        animation: none;
+    }
+
+    .mov-toque,
+    .mov-cartao {
+        transition-property: background-color, border-color, color, box-shadow;
+    }
+
+    .mov-toque:active,
+    .mov-cartao:hover {
+        transform: none;
+    }
+
+    .mov-icone {
+        transition-property: color, opacity;
+    }
+
+    .mov-icone:hover,
+    .group:hover .mov-icone,
+    :where(a, button, [role='button'], summary):hover .mov-icone {
+        transform: none;
+    }
+}
+
+/* The key has to change with the phrase, Transition only animates mount and unmount */
+.mov-troca-enter-active,
+.mov-troca-leave-active {
+    transition: opacity var(--mov-curto) var(--mov-chegada);
+}
+
+.mov-troca-enter-from,
+.mov-troca-leave-to {
+    opacity: 0;
+}
+
+/* A title that rises 10px pushes the eye at the first thing being read, so it is revealed in place */
+.mov-texto {
+    animation: mov-texto var(--mov-medio) var(--mov-chegada) backwards;
+    animation-delay: calc(var(--mov-i, 0) * var(--mov-passo));
+}
+
+@keyframes mov-texto {
+    from {
+        opacity: 0;
+        clip-path: inset(0 100% 0 0);
+    }
+    to {
+        opacity: 1;
+        clip-path: inset(0 0 0 0);
+    }
+}
+
+/* The top bar names the screen, and the name steps in from the side the screen will */
+.mov-titulo-enter-active {
+    transition:
+        opacity var(--mov-curto) var(--mov-chegada),
+        transform var(--mov-curto) var(--mov-chegada);
+}
+
+.mov-titulo-leave-active {
+    transition: none;
+}
+
+.mov-titulo-enter-from {
+    opacity: 0;
+    transform: translateX(calc(var(--mov-tela-x, 0px) / 2));
+}
+
+/* Content landing where the eye is already waiting, so opacity only */
+.mov-chega-enter-active {
+    transition: opacity var(--mov-medio) var(--mov-chegada);
+}
+
+.mov-chega-enter-from {
+    opacity: 0;
+}
+
+/* gaveta when the height changes something below it, mov-bloco when it does not */
+.mov-bloco-enter-active,
+.mov-bloco-leave-active {
+    transition:
+        opacity var(--mov-medio) var(--mov-chegada),
+        transform var(--mov-medio) var(--mov-chegada);
+}
+
+.mov-bloco-enter-from,
+.mov-bloco-leave-to {
+    opacity: 0;
+    transform: translateY(10px);
+}
+
+/* A floating box pushes nothing below it, which is what allows scale here */
+.mov-pop-enter-active {
+    transition:
+        opacity var(--mov-medio) var(--mov-chegada),
+        transform var(--mov-medio) var(--mov-chegada);
+    transform-origin: var(--mov-origem);
+}
+
+.mov-pop-leave-active {
+    transition:
+        opacity var(--mov-curto) var(--mov-chegada),
+        transform var(--mov-curto) var(--mov-chegada);
+    transform-origin: var(--mov-origem);
+}
+
+.mov-pop-enter-from,
+.mov-pop-leave-to {
+    opacity: 0;
+    transform: translateY(-6px) scale(var(--mov-nasce));
+}
+
+/* A mount animation and not a Transition, so v-show and v-if behave alike */
+.mov-erro {
+    animation: mov-erro var(--mov-curto) var(--mov-chegada) both;
+}
+
+@keyframes mov-erro {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .mov-troca-enter-active,
+    .mov-troca-leave-active,
+    .mov-titulo-enter-active,
+    .mov-chega-enter-active,
+    .mov-bloco-enter-active,
+    .mov-bloco-leave-active,
+    .mov-pop-enter-active,
+    .mov-pop-leave-active {
+        transition: none;
+    }
+
+    /* Zero the origin too, otherwise a frame is left transparent or shifted before the content lands */
+    .mov-troca-enter-from,
+    .mov-troca-leave-to,
+    .mov-chega-enter-from {
+        opacity: 1;
+    }
+
+    .mov-titulo-enter-from,
+    .mov-bloco-enter-from,
+    .mov-bloco-leave-to,
+    .mov-pop-enter-from,
+    .mov-pop-leave-to {
+        opacity: 1;
+        transform: none;
+    }
+
+    /* The origin lives in the keyframe, so animation none hands back the final state in place */
+    .mov-texto,
+    .mov-erro {
+        animation: none;
+    }
+}
+
+/* CSS cannot interpolate height auto, 0fr to 1fr animates the real height with nobody measuring */
+.gaveta-enter-active,
+.gaveta-leave-active {
+    display: grid;
+    grid-template-rows: 1fr;
+    transition:
+        grid-template-rows var(--mov-medio) var(--mov-chegada),
+        opacity var(--mov-curto) var(--mov-chegada);
+}
+
+.gaveta-enter-from,
+.gaveta-leave-to {
+    grid-template-rows: 0fr;
+    opacity: 0;
+}
+
+/* The child needs hidden overflow and no padding, it cannot shrink below its padding so the end would snap */
+.gaveta-enter-active > *,
+.gaveta-leave-active > * {
+    min-height: 0;
+    overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .gaveta-enter-active,
+    .gaveta-leave-active {
+        transition: none;
+    }
+
+    .gaveta-enter-from,
+    .gaveta-leave-to {
+        grid-template-rows: 1fr;
+        opacity: 1;
+    }
+}
+
+/* gaveta driven by an attribute instead of a Vue Transition, for a fold that reverses mid flight */
+.fold-rows {
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    visibility: hidden;
+    transition:
+        grid-template-rows var(--mov-medio) var(--mov-chegada),
+        opacity var(--mov-curto) var(--mov-chegada),
+        visibility 0s var(--mov-medio);
+}
+
+.fold-rows[data-open] {
+    grid-template-rows: 1fr;
+    opacity: 1;
+    visibility: visible;
+    transition:
+        grid-template-rows var(--mov-longo) var(--mov-chegada),
+        opacity var(--mov-longo) var(--mov-chegada),
+        visibility 0s;
+}
+
+.fold-rows > * {
+    min-height: 0;
+    overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .fold-rows,
+    .fold-rows[data-open] {
+        transition: none;
+    }
+}
+
+/* The live list, and the two exits below reuse these rules, a copy under another name is how classes diverge */
+.live-move,
+.mov-dispensa-move,
+.mov-conclui-move {
+    transition: transform var(--mov-medio) var(--mov-chegada);
+}
+
+.live-enter-active,
+.live-leave-active,
+.mov-dispensa-enter-active,
+.mov-conclui-enter-active {
+    transition:
+        opacity var(--mov-medio) var(--mov-chegada),
+        transform var(--mov-medio) var(--mov-chegada);
+}
+
+.live-enter-from,
+.live-leave-to,
+.mov-dispensa-enter-from,
+.mov-conclui-enter-from {
+    opacity: 0;
+    transform: translateY(-4px);
+}
+
+/* Out of flow on leave so the neighbours close the hole while it fades */
+.live-leave-active {
+    position: absolute;
+    inset-inline: 0;
+    pointer-events: none;
+}
+
+/* A table row cannot leave the flow, position absolute breaks the tr */
+.live-row-move {
+    transition: transform var(--mov-medio) var(--mov-chegada);
+}
+
+.live-row-enter-active,
+.live-row-leave-active {
+    transition: opacity var(--mov-medio) var(--mov-chegada);
+}
+
+.live-row-enter-from,
+.live-row-leave-to {
+    opacity: 0;
+}
+
+/* Dismissed is pushed out sideways, which is what separates it from vanished on its own */
+.mov-dispensa-leave-active {
+    position: absolute;
+    inset-inline: 0;
+    pointer-events: none;
+    transition:
+        opacity var(--mov-curto) var(--mov-chegada),
+        transform var(--mov-curto) var(--mov-chegada);
+}
+
+.mov-dispensa-leave-to {
+    opacity: 0;
+    transform: translateX(1.5rem) scale(var(--mov-nasce));
+}
+
+/* Finished grows a hair while it dissolves, shrinking is the vocabulary of what was taken away */
+.mov-conclui-leave-active {
+    position: absolute;
+    inset-inline: 0;
+    pointer-events: none;
+    transition:
+        opacity var(--mov-curto) var(--mov-chegada),
+        transform var(--mov-curto) var(--mov-chegada);
+}
+
+.mov-conclui-leave-to {
+    opacity: 0;
+    transform: scale(var(--mov-cresce));
+}
+
+/* The notice arrives from the edge, and the signed distance in --mov-borda is what gives it its tone */
+.mov-aviso-move {
+    transition: transform var(--mov-medio) var(--mov-chegada);
+}
+
+.mov-aviso-enter-active {
+    transition:
+        opacity var(--mov-medio) var(--mov-chegada),
+        transform var(--mov-medio) var(--mov-chegada);
+}
+
+.mov-aviso-enter-from {
+    opacity: 0;
+    transform: translateY(var(--mov-borda)) scale(var(--mov-nasce));
+}
+
+.mov-aviso-leave-active {
+    position: absolute;
+    inset-inline: 0;
+    pointer-events: none;
+    transition:
+        opacity var(--mov-curto) var(--mov-chegada),
+        transform var(--mov-curto) var(--mov-chegada);
+}
+
+.mov-aviso-leave-to {
+    opacity: 0;
+    transform: scale(var(--mov-nasce));
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .live-move,
+    .live-enter-active,
+    .live-leave-active,
+    .live-row-move,
+    .live-row-enter-active,
+    .live-row-leave-active,
+    .mov-dispensa-move,
+    .mov-dispensa-enter-active,
+    .mov-dispensa-leave-active,
+    .mov-conclui-move,
+    .mov-conclui-enter-active,
+    .mov-conclui-leave-active,
+    .mov-aviso-move,
+    .mov-aviso-enter-active,
+    .mov-aviso-leave-active {
+        transition: none;
+    }
+
+    /* Zero the enter origin too, cutting only the transition left a visible blink */
+    .live-enter-from,
+    .live-row-enter-from,
+    .mov-dispensa-enter-from,
+    .mov-conclui-enter-from,
+    .mov-aviso-enter-from {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+/* The flash is one animated number so the fill and the edge fade together, over the item's own fill */
+@property --mark-level {
+    syntax: '<number>';
+    inherits: false;
+    initial-value: 0;
+}
+
+/* Doubled so it beats the hover utility, the layers sit over whatever fill the item has */
+[data-selected][data-selected] {
+    background-image:
+        linear-gradient(to right, hsl(var(--primary) / var(--mark-level)) 3px, transparent 3px),
+        linear-gradient(
+            hsl(var(--primary) / calc(var(--row-selected-alpha) * var(--mark-level))),
+            hsl(var(--primary) / calc(var(--row-selected-alpha) * var(--mark-level)))
+        );
+    background-repeat: no-repeat;
+    animation: item-flash var(--mov-respira) var(--mov-volta) both;
+}
+
+/* Three soft pulses then out, the troughs stay lit so it reads as blinking and not as flicker */
+@keyframes item-flash {
+    0% {
+        --mark-level: 0;
+    }
+    10%,
+    46%,
+    80% {
+        --mark-level: 1;
+    }
+    28%,
+    64% {
+        --mark-level: 0.25;
+    }
+    100% {
+        --mark-level: 0;
+    }
+}
+
+/* One short fill that fades, nothing blinks */
+@media (prefers-reduced-motion: reduce) {
+    [data-selected][data-selected] {
+        animation: item-flash-calm calc(var(--mov-longo) * 2) var(--mov-volta) both;
+    }
+}
+
+@keyframes item-flash-calm {
+    from {
+        --mark-level: 1;
+    }
+    to {
+        --mark-level: 0;
+    }
+}
+
+/* What pulses is the colour and not the width, Chromium rounds outline-width to whole pixels */
+@keyframes destaque {
+    0%,
+    100% {
+        outline-color: hsl(var(--destaque-cor) / 0);
+    }
+    50% {
+        outline-color: hsl(var(--destaque-cor) / 0.55);
+    }
+}
+
+/* The overshoot lives in the steps and not in a curve, which is why there is no spring token */
+@keyframes destaque-pulo {
+    0%,
+    100% {
+        transform: scale(1);
+    }
+    35% {
+        transform: scale(var(--mov-cresce));
+    }
+    70% {
+        transform: scale(0.995);
+    }
+}
+
+.destaque,
+.destaque-mudou {
+    border-radius: var(--radius);
+    outline: 3px solid transparent;
+    outline-offset: 2px;
+}
+
+.destaque {
+    animation: destaque 1s ease-in-out 3;
+}
+
+/* Two blinks and not three, here the eye is already on the screen and the hop calls by itself */
+.destaque-mudou {
+    animation:
+        destaque 700ms ease-in-out 2,
+        destaque-pulo var(--mov-longo) var(--mov-volta);
+}
+
+/* Motion off, the ring stays lit and leaves with the class, the information survives */
+@media (prefers-reduced-motion: reduce) {
+    .destaque,
+    .destaque-mudou {
+        animation: none;
+        outline-color: hsl(var(--destaque-cor) / 0.55);
+        transform: none;
+    }
+}
+
+/* Opacity only, an 8px dot that also grows reads as a blinker */
+.mov-pulsa {
+    animation: mov-pulsa var(--mov-respira) var(--mov-volta) infinite;
+}
+
+@keyframes mov-pulsa {
+    50% {
+        opacity: 0.3;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .mov-pulsa {
+        animation: none;
+        opacity: 1;
+    }
+}
+
+/* The skeleton reserves the size so the page stops jumping, the sweep replaces animate-pulse */
+.mov-esqueleto {
+    overflow: hidden;
+    isolation: isolate;
+    animation: none;
+}
+
+/* Specificity zero on purpose, as a plain class it beat the .absolute utility and collapsed every chart skeleton */
+:where(.mov-esqueleto) {
+    position: relative;
+}
+
+.mov-esqueleto::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background-image: linear-gradient(90deg, transparent, hsl(var(--foreground) / 0.08), transparent);
+    animation: mov-esqueleto var(--mov-respira) var(--mov-volta) infinite;
+}
+
+@keyframes mov-esqueleto {
+    to {
+        transform: translateX(100%);
+    }
+}
+
+/* The sweep goes entirely, the reserved space is the part that informs */
+@media (prefers-reduced-motion: reduce) {
+    .mov-esqueleto::after {
+        animation: none;
+        opacity: 0;
+    }
+}
+
+/* The wait for a block that already has valid content */
+.mov-atualiza {
+    transition: opacity var(--mov-medio) var(--mov-chegada);
+}
+
+.mov-atualiza[aria-busy='true'] {
+    opacity: var(--mov-esmaece);
+}
+
+/* Reduced motion still fades, the fade is information and not movement */
+@media (prefers-reduced-motion: reduce) {
+    .mov-atualiza {
+        transition: none;
+    }
+}
+
+/* The bar animates its clip, not width or scaleX, so the round tip stays round */
+.mov-barra {
+    clip-path: inset(0 calc(100% - var(--mov-barra, 0%)) 0 0 round 9999px);
+    transition: clip-path var(--mov-curto) var(--mov-chegada);
+}
+
+/* A browser without clip-path would draw the bar full */
+@supports not (clip-path: inset(0 0 0 0 round 9999px)) {
+    .mov-barra {
+        width: var(--mov-barra, 0%);
+        border-radius: 9999px;
+    }
+}
+
+/* The same bar arriving full, for the number that never moves */
+.mov-barra-enche {
+    animation: mov-barra-enche var(--mov-longo) var(--mov-chegada) both;
+}
+
+@keyframes mov-barra-enche {
+    from {
+        clip-path: inset(0 100% 0 0 round 9999px);
+    }
+}
+
+/* No origin state to zero here, this bar starts at the previous real percentage */
+@media (prefers-reduced-motion: reduce) {
+    .mov-barra {
+        transition: none;
+    }
+
+    .mov-barra-enche {
+        animation: none;
+    }
+}
+
+/* The rail widens by its clip and the names by opacity, the column beside it snaps once and the content slides on the GPU */
+.nav-rail {
+    /* Opening and closing last the same, the way out starts as softly as the way in ends */
+    --rail-curve: var(--mov-volta);
+    clip-path: inset(0 calc(100% - var(--rail-w)) 0 0);
+    /* What moves inside the rail lays out only the rail */
+    contain: size layout style;
+    transition:
+        clip-path var(--mov-longo) var(--rail-curve),
+        box-shadow var(--mov-longo) var(--rail-curve);
+}
+
+/* The right inset leaves room for the peek shadow */
+.nav-rail[data-expanded] {
+    --rail-curve: var(--mov-chegada);
+    clip-path: inset(0 -3rem 0 0);
+}
+
+/* Peeking it floats over the content, pinned it sits beside it and needs no shadow */
+.nav-rail[data-peeking] {
+    box-shadow: var(--elevation-shadow-sm);
+}
+
+/* The names fade on the clip's own clock, so a name is never cut by the edge while it is still bright */
+.nav-rail .nav-rail-fade {
+    opacity: 0;
+    transition: opacity var(--mov-longo) var(--rail-curve);
+}
+
+.nav-rail[data-expanded] .nav-rail-fade {
+    opacity: 1;
+}
+
+.nav-rail-edge,
+.nav-rail .nav-rail-divider {
+    transition: opacity var(--mov-longo) var(--rail-curve);
+}
+
+.nav-rail[data-expanded] .nav-rail-edge,
+.nav-rail[data-expanded] .nav-rail-divider {
+    opacity: 0;
+}
+
+/* A folded group folds and unfolds with the rail, on the same clock both ways */
+@media (prefers-reduced-motion: no-preference) {
+    .nav-rail .fold-rows {
+        transition:
+            grid-template-rows var(--mov-longo) var(--rail-curve),
+            opacity var(--mov-longo) var(--rail-curve),
+            visibility 0s var(--mov-longo);
+    }
+
+    .nav-rail .fold-rows[data-open] {
+        transition:
+            grid-template-rows var(--mov-longo) var(--rail-curve),
+            opacity var(--mov-longo) var(--rail-curve),
+            visibility 0s;
+    }
+}
+
+/* The group chevron turns with the fold beside it, on its own rule since mov-icone rewrites transform on hover */
+.nav-chevron {
+    transition: transform var(--mov-medio) var(--mov-chegada);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .nav-rail,
+    .nav-rail .nav-rail-fade,
+    .nav-rail-edge,
+    .nav-rail .nav-rail-divider,
+    .nav-chevron {
+        transition: none;
+    }
+}
