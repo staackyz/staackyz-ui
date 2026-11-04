@@ -1,8 +1,9 @@
 import animate from 'tailwindcss-animate';
 import defaultTheme from 'tailwindcss/defaultTheme';
 
-// Every token takes an opacity modifier, the components paint with bg-primary/10 and similar
-const token = (name) => `hsl(var(--${name}) / <alpha-value>)`;
+// Tailwind still takes an opacity modifier on this form (bg-primary/10), and a plain bg-primary stays one declaration
+// instead of two, which is kilobytes over every utility of a whole app
+const token = (name) => `hsl(var(--${name}))`;
 
 // The four steps a meaning carries, the solid block, the label on it, the pill fill and the pill text
 const steps = (name) => ({

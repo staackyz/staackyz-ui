@@ -1,16 +1,19 @@
 <script setup lang="ts">
+import type { HTMLAttributes } from 'vue';
+import { cn } from '../lib/utils';
 import { Skeleton } from '../ui/skeleton';
 
 export type SkeletonShape = 'board' | 'list' | 'tiles';
 
 // The destination drawn in outline while a slow click waits on it
-defineProps<{ shape: SkeletonShape }>();
+// The class swaps the fill for an app whose screens sit on another surface than the page
+const props = defineProps<{ shape: SkeletonShape; class?: HTMLAttributes['class'] }>();
 </script>
 
 <template>
     <!-- Over the screen being left and never instead of it, so nothing is unmounted before the answer arrives -->
     <div
-        class="absolute inset-0 z-10 flex flex-col gap-4 overflow-hidden bg-background p-[var(--screen-pad)]"
+        :class="cn('absolute inset-0 z-10 flex flex-col gap-4 overflow-hidden bg-background p-[var(--screen-pad)]', props.class)"
         data-screen-skeleton
         aria-hidden="true"
     >

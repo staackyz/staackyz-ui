@@ -13,7 +13,7 @@ Vai como código-fonte (`.vue`, `.ts` e `.css`), compilado pelo Vite e pelo Tail
 Sempre presa numa tag, nunca numa branch:
 
 ```json
-"@staackyz/ui": "github:staackyz/staackyz-ui#v0.1.0"
+"@staackyz/ui": "github:staackyz/staackyz-ui#v0.1.1"
 ```
 
 O repositório é público, então `npm ci` não precisa de chave nem token no runner nem no servidor.
@@ -79,6 +79,10 @@ provideUi({
 });
 ```
 
+Dois campos opcionais: `navLink`, o link que o trilho e a gaveta desenham (cai no `link` sem ele), e `formatNumber`, como
+o número aparece na mira dos gráficos (cai no `Intl.NumberFormat` do navegador). Para trocar só uma parte numa subárvore,
+`extendUi({ navLink })` no setup do componente que envolve o trecho, e o resto vem da raiz.
+
 Sem `provideUi` os componentes caem num inglês de reserva, para nenhum nome acessível ficar vazio. O texto de tela do
 app continua só nos arquivos de tradução dele.
 
@@ -93,9 +97,9 @@ Um tema é um arquivo só de variáveis HSL em `:root, .theme-light` e `.dark`, 
 com os degraus `DEFAULT`, `foreground`, `soft` e `strong`. `positive`, `negative` e `caution` (o botão que muda algo
 importante) e a elevação são os mesmos em todo app e moram em `base.css`.
 
-| Tema | De onde vem | Página | Cartão | Primária | Raio |
-|---|---|---|---|---|---|
-| `blue` | o CMMS, valor por valor | `#E7EDF6`, escuro `#0B111E` | `#F5F8FC`, escuro `#121A2B` | `#2563EB`, escuro `#3B82F6` | 12px |
+| Tema      | De onde vem             | Página                      | Cartão                      | Primária                    | Raio |
+| --------- | ----------------------- | --------------------------- | --------------------------- | --------------------------- | ---- |
+| `blue`    | o CMMS, valor por valor | `#E7EDF6`, escuro `#0B111E` | `#F5F8FC`, escuro `#121A2B` | `#2563EB`, escuro `#3B82F6` | 12px |
 | `emerald` | o Life, valor por valor | `#EAF3EE`, escuro `#071A12` | `#FFFFFF`, escuro `#0F2419` | `#15803D`, escuro `#4ADE80` | 10px |
 
 Para mudar só uma cor, o app escreve a variável depois do import do tema, num `@layer base { :root { ... } }` dele.
@@ -124,28 +128,33 @@ Primitivas (`ui/`, shadcn-vue sobre reka-ui): `Avatar`, `Button` (`default`, `de
 `Collapsible`, `Dialog` (e `DialogScrollContent`), `DropdownMenu`, `Input`, `Label`, `Separator`, `Sheet`, `Skeleton` e
 `SkeletonRows`, `Tabs`, `Tooltip`, mais `radixEnter`, `radixOverlay`, `radixPopIn` e `radixTooltipPopIn`.
 
-| Peça | O que faz |
-|---|---|
-| `AppShell` | A linha da tela: slots `rail`, `topbar`, o padrão (a tela), `aside` e `bottom`, e o link de pular para o conteúdo (`#main-content`) |
-| `ShellTopbar` | Nome e ícone da tela à esquerda, o botão da gaveta entre md e lg, slots padrão (ferramentas), `after-title` e `account` |
-| `NavRail` | O trilho de 4rem que espia em 16rem sob o mouse e fixa a partir de lg, pelo `clip-path`, nunca pela largura |
-| `NavDrawer` | A mesma lista numa gaveta entre md e lg, fecha ao navegar |
-| `NavList` | O corpo único do trilho e da gaveta: atalhos, grupos que dobram (lembrados em `collapseKey`), contador de pendência, slots `mark`, `brand` e `footer` |
-| `BottomNav`, `PhoneHubSheet` | A faixa de hubs do celular e a folha com as telas do hub, que fecha pelo voltar do aparelho; hub com `menu: true` desenha o slot `menu` do app |
-| `ScreenFrame` | A tela que é dona da própria altura, cabeçalho parado e corpo que rola (`.screen-scroll`) |
-| `PageHeader` | Título só quando a barra não o mostra, e o slot `actions` |
-| `EmptyState` | Ícone fino, uma frase e no máximo uma ação |
-| `KpiFrame`, `StatCard`, `useStatValue` | O cartão de número, com contagem, escala pelo comprimento e faísca em SVG |
-| `PeriodDelta` | Quanto o número andou contra o período anterior, a cor pelo sentido (`up_good`, `up_bad`, `neutral`) e o texto por `short` e `sentence` |
-| `ListRow`, `ListRowLink` | Uma linha por item, a linha inteira abre e as ações vão no menu do fim |
-| `ScreenSkeleton` | O contorno de uma tela lenta (`board`, `list`, `tiles`) por cima da que está saindo |
+| Peça                                   | O que faz                                                                                                                                             |
+| -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `AppShell`                             | A linha da tela: slots `rail`, `topbar`, o padrão (a tela), `aside` e `bottom`, e o link de pular para o conteúdo (`#main-content`)                   |
+| `ShellTopbar`                          | Nome e ícone da tela à esquerda, o botão da gaveta entre md e lg, slots padrão (ferramentas), `after-title` e `account`                               |
+| `NavRail`                              | O trilho de 4rem que espia em 16rem sob o mouse e fixa a partir de lg, pelo `clip-path`, nunca pela largura                                           |
+| `NavDrawer`                            | A mesma lista numa gaveta entre md e lg, fecha ao navegar                                                                                             |
+| `NavList`                              | O corpo único do trilho e da gaveta: atalhos, grupos que dobram (lembrados em `collapseKey`), contador de pendência, slots `mark`, `brand` e `footer` |
+| `BottomNav`, `PhoneHubSheet`           | A faixa de hubs do celular e a folha com as telas do hub, que fecha pelo voltar do aparelho; hub com `menu: true` desenha o slot `menu` do app        |
+| `ScreenFrame`                          | A tela que é dona da própria altura, cabeçalho parado e corpo que rola (`.screen-scroll`)                                                             |
+| `PageHeader`                           | Título só quando a barra não o mostra, e o slot `actions`                                                                                             |
+| `EmptyState`                           | Ícone fino, uma frase e no máximo uma ação                                                                                                            |
+| `KpiFrame`, `StatCard`, `useStatValue` | O cartão de número, com contagem, escala pelo comprimento e faísca em SVG                                                                             |
+| `PeriodDelta`                          | Quanto o número andou contra o período anterior, a cor pelo sentido (`up_good`, `up_bad`, `neutral`) e o texto por `short` e `sentence`               |
+| `ListRow`, `ListRowLink`               | Uma linha por item, a linha inteira abre e as ações vão no menu do fim                                                                                |
+| `ScreenSkeleton`                       | O contorno de uma tela lenta (`board`, `list`, `tiles`) por cima da que está saindo                                                                   |
+
+`NavRail`, `ShellTopbar` e `BottomNav` aceitam `controlAttrs`, atributos que vão para o botão de fixar, o botão da
+gaveta e a barra, para os ganchos do próprio app (o passo de um tour, por exemplo). `ScreenSkeleton` aceita `class` para
+trocar o fundo.
 
 Navegação: o app monta `ShellNav` (`shortcuts` e `groups`) e `PhoneNav` (`phoneNavAt(hubs, url)` acende o hub pelo
 caminho mais longo) já filtrados pelo que a pessoa pode abrir, e passa `currentPath`. Esconder um item aqui nunca é
 controle de acesso: a rota continua checando no servidor.
 
 Gráfico, em `@staackyz/ui/charts`: `ChartFrame` (só busca o ECharts quando o cartão chega perto da tela, reservando a
-altura), `ChartCanvas` (sempre assíncrono, registra linha, barra e dispersão, e a mira compartilhada das linhas),
+altura), `ChartCanvas` (sempre assíncrono, registra linha, barra e dispersão, e a mira compartilhada das linhas), `loadChartCanvas`
+(busca o canvas antes, para a tela que sabe que vai desenhar),
 `chartTheme` e as funções da mira (`crosshairSeries`, `withCrosshair`, `expectedIdOf`).
 
 Script de movimento: `staggeredEntrance`, `vEnter`, `vEnterOnView`, `useEntranceQueue`, `useCountUp`, `useJustChanged`,

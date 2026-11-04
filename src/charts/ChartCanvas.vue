@@ -5,6 +5,7 @@ import { GridComponent, LegendComponent, TooltipComponent } from 'echarts/compon
 import * as echarts from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { useUi } from '../lib/config';
 import { STAGGER_CAP, arrivalEasing, sheetDuration } from '../lib/motion';
 import { categoryAt, companionOf, crosshairSeries, formatValue, nearest, valueAt, withCrosshair } from './chartCrosshair';
 import ChartCrosshair, { type CrosshairPoint } from './ChartCrosshair.vue';
@@ -125,8 +126,13 @@ interface ChartModel {
     getComponent(main: string, index?: number): { coordinateSystem?: { getRect(): Rect } } | undefined;
 }
 
-const number = (value: number, decimals?: number) =>
-    props.formatNumber ? props.formatNumber(value, decimals) : new Intl.NumberFormat(undefined, { maximumFractionDigits: decimals }).format(value);
+const ui = useUi();
+
+const number = (value: number, decimals?: number) => {
+    const format = props.formatNumber ?? ui.formatNumber;
+
+    return format ? format(value, decimals) : new Intl.NumberFormat(undefined, { maximumFractionDigits: decimals }).format(value);
+};
 
 const candidates = computed(() => crosshairSeries(props.option));
 const point = ref<CrosshairPoint | null>(null);
