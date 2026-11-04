@@ -12,6 +12,8 @@ const props = withDefaults(
         icon?: Component;
         /** The menu button between md and lg, off for an app with no drawer */
         drawer?: boolean;
+        /** Extra attributes on the menu button, for the app's own hooks like a guided tour step */
+        controlAttrs?: Record<string, string>;
     }>(),
     { title: undefined, icon: undefined, drawer: true },
 );
@@ -30,6 +32,7 @@ const nav = useNavDrawer();
         <button
             v-if="props.drawer"
             type="button"
+            v-bind="props.controlAttrs"
             data-nav-drawer-trigger
             class="mov-toque hidden h-9 w-9 shrink-0 items-center justify-center rounded-lg text-muted-foreground hover:bg-accent hover:text-foreground md:flex lg:hidden"
             :aria-label="labels.openMenu"
@@ -48,7 +51,7 @@ const nav = useNavDrawer();
             </div>
         </Transition>
         <!-- Beside the title and not inside it, the title hook reads the screen name alone -->
-        <div class="mr-auto flex min-w-0 items-center">
+        <div class="mr-auto flex shrink-0 items-center">
             <slot name="after-title" />
         </div>
 

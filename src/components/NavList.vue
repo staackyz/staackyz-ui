@@ -30,7 +30,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{ navigate: [] }>();
 
-const { labels, link } = useUi();
+const { labels, navLink: link } = useUi();
 
 const rail = computed(() => props.variant === 'rail');
 const path = computed(() => normalizePath(props.currentPath));

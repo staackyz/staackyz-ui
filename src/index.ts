@@ -1,4 +1,4 @@
-export { provideUi, useUi, type ResolvedUi, type UiConfig, type UiLabels } from './lib/config';
+export { extendUi, provideUi, useUi, type ResolvedUi, type UiConfig, type UiLabels } from './lib/config';
 export { fromInnerControl, innerControl } from './lib/innerControl';
 export {
     STAGGER_CAP,

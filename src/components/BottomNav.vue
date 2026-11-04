@@ -9,6 +9,8 @@ const props = defineProps<{
     nav: PhoneNav;
     /** The path of the screen in front, a change closes the sheet */
     currentPath: string;
+    /** Extra attributes on the bar, for the app's own hooks like a guided tour step */
+    controlAttrs?: Record<string, string>;
 }>();
 
 const { labels, link } = useUi();
@@ -40,6 +42,7 @@ const slotClass = 'mov-toque group relative flex min-w-0 flex-col items-center j
     <!-- Fixed, because the screens that own their height scroll inside, and a bar in the flow would ride away with them -->
     <!-- has-bottom-nav here too, since the bar sits beside main and would not inherit the height it is the source of -->
     <nav
+        v-bind="props.controlAttrs"
         data-page-memory
         data-bottomnav
         :aria-label="labels.mainNavigation"

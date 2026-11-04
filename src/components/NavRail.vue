@@ -14,6 +14,8 @@ const props = defineProps<{
     pending?: Record<string, number>;
     collapseKey?: string;
     currentHref?: string | null;
+    /** Extra attributes on the pin button, for the app's own hooks like a guided tour step */
+    controlAttrs?: Record<string, string>;
 }>();
 
 const { labels } = useUi();
@@ -117,6 +119,7 @@ const pinIcon = computed(() => (rail.expanded.value ? PanelLeftClose : rail.peek
             <div v-if="rail.docks.value" class="shrink-0 border-t px-2 py-2">
                 <button
                     type="button"
+                    v-bind="props.controlAttrs"
                     data-nav-rail-pin
                     class="mov-toque group flex h-9 w-full items-center gap-3 rounded-lg px-2 text-sm font-medium text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:text-foreground"
                     :aria-label="pinLabel"
