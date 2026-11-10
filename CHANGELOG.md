@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.1.2, 2026-11-10
+
+- O contador de pendência do `NavList` (no ícone do trilho e no atalho) volta a ser branco sobre o amarelo, como era no
+  CMMS: `text-warning-foreground` deixava o número quase preto
+
 ## v0.1.1, 2026-11-03
 
 - O que o CMMS precisava para trocar as cópias dele pelo pacote sem mudar nada na tela
