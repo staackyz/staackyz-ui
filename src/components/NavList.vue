@@ -100,7 +100,7 @@ const ITEM = 'mov-toque group flex min-h-9 items-center gap-3 rounded-lg px-2 py
 const TILE = 'flex size-8 shrink-0 items-center justify-center rounded-md transition-colors';
 // The counter sits on the icon's corner, so it reads the same on the narrow rail, the wide one and the drawer
 const PENDING =
-    'pointer-events-none absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-warning px-1 text-2xs font-bold leading-none text-warning-foreground shadow-sm';
+    'pointer-events-none absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-warning px-1 text-2xs font-bold leading-none text-white shadow-sm';
 
 const itemClass = (item: NavItem) => {
     const lit = isCurrent(item);
@@ -238,7 +238,7 @@ const shortcutClass = (shortcut: NavShortcut) => {
                         {{ shortcut.title }}
                         <span
                             v-if="pendingOf(shortcut.href)"
-                            class="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-warning px-1 text-2xs font-bold leading-none text-warning-foreground"
+                            class="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-warning px-1 text-2xs font-bold leading-none text-white"
                             data-nav-pending
                         >
                             {{ pendingText(pendingOf(shortcut.href)) }}
