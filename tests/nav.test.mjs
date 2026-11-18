@@ -1,7 +1,7 @@
 /** The lit item and the lit hub follow the longest path that claims the screen. Runs via `npm test`. */
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
-import { covers, normalizePath, phoneNavAt, readCollapsed, toggleCollapsed } from '../src/lib/nav.ts';
+import { covers, groupFold, normalizePath, phoneNavAt, readCollapsed, toggleCollapsed } from '../src/lib/nav.ts';
 
 const item = (href, claims = [href], extra = {}) => ({ title: href, href, claims, ...extra });
 
@@ -71,5 +71,26 @@ describe('folded groups', () => {
         assert.equal(readCollapsed(store('{nope'), 'key').size, 0);
         assert.deepEqual([...readCollapsed(store('["a",3,null]'), 'key')], ['a']);
         assert.equal(readCollapsed(null, 'key').size, 0);
+    });
+});
+
+describe('group visibility', () => {
+    const folded = new Set(['service']);
+
+    it('keeps a folded group hidden on the narrow rail too, T-357', () => {
+        assert.equal(groupFold(folded, 'service', true).open, false);
+        assert.equal(groupFold(folded, 'service', false).open, false);
+    });
+
+    it('lists an open group the same narrow and wide', () => {
+        assert.equal(groupFold(folded, 'factory', true).open, true);
+        assert.equal(groupFold(folded, 'factory', false).open, true);
+    });
+
+    it('leaves the title of a folded group in reach on the narrow rail, so the keyboard can unfold it', () => {
+        assert.equal(groupFold(folded, 'service', true).titleInert, false);
+        assert.equal(groupFold(folded, 'factory', true).titleInert, true);
+        assert.equal(groupFold(folded, 'factory', false).titleInert, false);
+        assert.equal(groupFold(folded, 'service', false).titleInert, false);
     });
 });

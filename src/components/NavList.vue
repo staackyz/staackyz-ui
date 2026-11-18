@@ -3,7 +3,17 @@ import { ChevronDown } from 'lucide-vue-next';
 import { computed, onMounted, ref, watch } from 'vue';
 import { useUi } from '../lib/config';
 import { railClock, reducedMotion } from '../lib/motion';
-import { covers, normalizePath, readCollapsed, toggleCollapsed, type NavGroup, type NavItem, type NavShortcut, type ShellNav } from '../lib/nav';
+import {
+    covers,
+    groupFold,
+    normalizePath,
+    readCollapsed,
+    toggleCollapsed,
+    type NavGroup,
+    type NavItem,
+    type NavShortcut,
+    type ShellNav,
+} from '../lib/nav';
 import { cn } from '../lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
 
@@ -84,6 +94,8 @@ const collapsed = ref(new Set<string>());
 onMounted(() => {
     if (props.collapseKey) collapsed.value = readCollapsed(store(), props.collapseKey);
 });
+
+const fold = (key: string) => groupFold(collapsed.value, key, props.compact === true);
 
 const toggle = (key: string) => {
     collapsed.value = props.collapseKey
@@ -302,33 +314,43 @@ const shortcutClass = (shortcut: NavShortcut) => {
                     <section v-for="group in groups" :key="group.key" :data-nav-group="group.key">
                         <!-- One slot of the same height in both shapes, the divider narrow and the folding title wide, so widening moves no item -->
                         <div v-if="rail" class="relative h-7">
-                            <span aria-hidden="true" class="nav-rail-divider pointer-events-none absolute left-2 top-1/2 h-px w-8 bg-border" />
-                            <button
-                                type="button"
-                                class="nav-rail-fade absolute inset-0 flex w-full items-center gap-2 rounded-md px-2 text-2xs font-bold uppercase tracking-wider text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:bg-accent focus-visible:text-foreground"
-                                :inert="compact || undefined"
-                                :aria-expanded="!collapsed.has(group.key)"
-                                :aria-controls="`nav-group-${group.key}`"
-                                @click="toggle(group.key)"
-                            >
-                                <span class="flex-1 truncate text-left">{{ group.label }}</span>
-                                <ChevronDown class="nav-chevron h-3.5 w-3.5 shrink-0" :class="{ '-rotate-90': collapsed.has(group.key) }" />
-                            </button>
+                            <Tooltip :disabled="!tips || fold(group.key).open">
+                                <TooltipTrigger as-child>
+                                    <button
+                                        type="button"
+                                        class="nav-rail-fade peer absolute inset-0 flex w-full items-center gap-2 rounded-md px-2 text-2xs font-bold uppercase tracking-wider text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:bg-accent focus-visible:text-foreground"
+                                        :inert="fold(group.key).titleInert || undefined"
+                                        :aria-expanded="fold(group.key).open"
+                                        :aria-controls="`nav-group-${group.key}`"
+                                        @click="toggle(group.key)"
+                                    >
+                                        <span class="flex-1 truncate text-left">{{ group.label }}</span>
+                                        <ChevronDown class="nav-chevron h-3.5 w-3.5 shrink-0" :class="{ '-rotate-90': !fold(group.key).open }" />
+                                    </button>
+                                </TooltipTrigger>
+                                <TooltipContent side="right" data-nav-tip>{{ group.label }}</TooltipContent>
+                            </Tooltip>
+                            <span
+                                aria-hidden="true"
+                                class="nav-rail-divider pointer-events-none absolute top-1/2 h-px bg-border peer-focus-visible:bg-primary"
+                                :class="fold(group.key).open ? 'left-2 w-8' : 'left-4 w-4'"
+                                :data-nav-folded-tick="fold(group.key).open ? undefined : ''"
+                            />
                         </div>
                         <button
                             v-else
                             type="button"
                             class="group flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-2xs font-bold uppercase tracking-wider text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:bg-accent focus-visible:text-foreground"
-                            :aria-expanded="!collapsed.has(group.key)"
+                            :aria-expanded="fold(group.key).open"
                             :aria-controls="`nav-group-${group.key}`"
                             @click="toggle(group.key)"
                         >
                             <span class="flex-1 truncate text-left">{{ group.label }}</span>
-                            <ChevronDown class="nav-chevron h-3.5 w-3.5 shrink-0" :class="{ '-rotate-90': collapsed.has(group.key) }" />
+                            <ChevronDown class="nav-chevron h-3.5 w-3.5 shrink-0" :class="{ '-rotate-90': !fold(group.key).open }" />
                         </button>
 
-                        <!-- The narrow rail lists every item, a folded group hides its items only where its title shows -->
-                        <div :id="`nav-group-${group.key}`" class="fold-rows" :data-open="compact || !collapsed.has(group.key) ? '' : undefined">
+                        <!-- A folded group now stays folded on the narrow rail too, the owner wants it hidden there and not only where its title shows -->
+                        <div :id="`nav-group-${group.key}`" class="fold-rows" :data-open="fold(group.key).open ? '' : undefined">
                             <div>
                                 <ul class="space-y-0.5" :class="rail ? 'pb-1' : 'pb-2'">
                                     <li v-for="item in group.items" :key="item.href">

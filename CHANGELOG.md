@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.1.3, 2026-11-18
+
+- Grupo recolhido no `NavList` continua recolhido no trilho estreito: some a lista dele e fica só um traço curto no lugar
+  da divisória (meia largura). O título desse grupo sai do `inert` no trilho estreito, então o teclado e o toque chegam nele para abrir
+  de novo, com o nome na dica e o traço na cor da marca no foco. Grupo aberto segue igual. `groupFold` em `lib/nav.ts`
+  decide as duas coisas
+
 ## v0.1.2, 2026-11-10
 
 - O contador de pendência do `NavList` (no ícone do trilho e no atalho) volta a ser branco sobre o amarelo, como era no
