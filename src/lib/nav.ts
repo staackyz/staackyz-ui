@@ -30,6 +30,12 @@ export const toggleCollapsed = (store: Store | null, key: string, current: Reado
     return next;
 };
 
+export const groupFold = (collapsed: ReadonlySet<string>, group: string, compact: boolean) => {
+    const open = !collapsed.has(group);
+
+    return { open, titleInert: compact && open };
+};
+
 /** The path a link points to, with no host, query, hash or trailing slash */
 export function normalizePath(url: string): string {
     const bare = url
