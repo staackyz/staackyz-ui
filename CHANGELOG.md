@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.1.4, 2026-11-20
+
+- `Button` `outline` passa a ser neutro: borda de campo, fundo do cartão, texto normal e o fundo `muted` no hover e no
+  foco. O azul da marca fica só no `default`, a ação principal da tela, e a tela com uma fileira de botões azuis volta a
+  ter um destaque só (hierarquia de botões, T-424 do CMMS)
+
 ## v0.1.3, 2026-11-18
 
 - Grupo recolhido no `NavList` continua recolhido no trilho estreito: some a lista dele e fica só um traço curto no lugar
