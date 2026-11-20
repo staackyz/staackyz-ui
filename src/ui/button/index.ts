@@ -15,8 +15,9 @@ export const buttonVariants = cva(
                 positive: 'bg-positive text-positive-foreground shadow-sm hover:bg-positive-hover focus-visible:bg-positive-hover',
                 negative: 'bg-negative text-negative-foreground shadow-sm hover:bg-negative-hover focus-visible:bg-negative-hover',
                 caution: 'bg-caution text-caution-foreground shadow-sm hover:bg-caution-hover focus-visible:bg-caution-hover',
+                // Secondary actions are neutral since T-424, brand blue was the main action's colour and a toolbar of blue outlines left nothing standing out
                 outline:
-                    'border-2 border-primary bg-transparent text-primary shadow-sm hover:bg-primary hover:text-primary-foreground focus-visible:bg-primary focus-visible:text-primary-foreground',
+                    'border border-input bg-card text-foreground shadow-sm hover:bg-muted hover:text-foreground focus-visible:bg-muted focus-visible:text-foreground',
                 // Paired actions that must not look alike, like stock in and stock out, the strong token flips for the dark theme
                 'outline-success':
                     'border-2 border-success-strong bg-transparent text-success-strong shadow-sm hover:border-success hover:bg-success hover:text-success-foreground focus-visible:border-success focus-visible:bg-success focus-visible:text-success-foreground',

@@ -128,6 +128,10 @@ Primitivas (`ui/`, shadcn-vue sobre reka-ui): `Avatar`, `Button` (`default`, `de
 `Collapsible`, `Dialog` (e `DialogScrollContent`), `DropdownMenu`, `Input`, `Label`, `Separator`, `Sheet`, `Skeleton` e
 `SkeletonRows`, `Tabs`, `Tooltip`, mais `radixEnter`, `radixOverlay`, `radixPopIn` e `radixTooltipPopIn`.
 
+Hierarquia do `Button`: uma ação cheia por tela (`default`, a de criar), as secundárias em `outline` ou `ghost`, que são
+neutras e nunca da cor da marca, a terciária como botão de ícone com dica, e o que apaga ou cancela em `negative` (ou
+`outline-destructive` ao lado de outra ação).
+
 | Peça                                   | O que faz                                                                                                                                             |
 | -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `AppShell`                             | A linha da tela: slots `rail`, `topbar`, o padrão (a tela), `aside` e `bottom`, e o link de pular para o conteúdo (`#main-content`)                   |
