@@ -26,10 +26,14 @@ main:has(.screen-frame) {
     height: calc(100svh - var(--topbar-h) - var(--bottomnav-h));
     /* The height already gave the bar its strip, keeping the shell's padding too would subtract it twice */
     padding-bottom: 0;
+    /* Nothing is meant to leave a frame, and WebView2 counted an absolute child placed against main as page overflow, a second scrollbar in the Windows app */
+    overflow: clip;
 }
 
 /* The scroll region reaches the screen edge, so the hidden bar and the padding never cut a row */
 .screen-scroll {
+    /* An absolute child deep in the list is placed against the scroller, so it scrolls and clips with the rows instead of stretching the page */
+    position: relative;
     margin-bottom: calc(var(--screen-pad) * -1);
     padding-bottom: var(--screen-pad);
 
