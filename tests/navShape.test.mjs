@@ -1,18 +1,37 @@
-/** The lit shortcut reads as one shape, its tile the filled end of the outline (T-452 of the CMMS). Runs via `npm test`. */
+/** A lit shortcut or item reads as one shape, its tile the filled end of the outline (T-452 of the CMMS). Runs via `npm test`. */
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { describe, it } from 'node:test';
 
 const read = (path) => readFileSync(new URL(`../src/${path}`, import.meta.url), 'utf8');
 
+const classesOf = (source, name) => (source.match(new RegExp(`const ${name} =\\s*'([^']+)'`))?.[1] ?? '').split(' ');
+
+describe('the lit nav item', () => {
+    const list = read('components/NavList.vue');
+
+    it('keeps the 32px square unlit inside a 36px box flush with the row, so lighting grows it without moving it', () => {
+        const tile = classesOf(list, 'TILE');
+
+        for (const name of ['size-9', 'border-2', 'bg-clip-padding']) assert.ok(tile.includes(name), name);
+        assert.ok(classesOf(list, 'ITEM_ROW').includes('pl-0'), 'the row put padding back between tile and outline');
+    });
+
+    it('draws the lit row with the same outline card as the lit shortcut, and squares the tile only when wide', () => {
+        assert.ok(list.includes("(item.tone === 'danger' ? 'border-destructive bg-destructive/10' : 'border-primary bg-primary/10')"));
+        assert.ok(list.includes("isCurrent(item) && !props.compact ? 'rounded-l-lg rounded-r-none' : 'rounded-lg'"));
+        assert.ok(!/bg-primary\/10 font-semibold/.test(list), 'the lit row went back to a plain fill');
+    });
+});
+
 describe('the rail shortcut', () => {
     const list = read('components/NavList.vue');
 
     it('puts the tile flush on the left of its card and as tall as the row', () => {
-        const tile = list.match(/const SHORTCUT_TILE =\s*'([^']+)'/)?.[1] ?? '';
+        const tile = classesOf(list, 'SHORTCUT_TILE');
 
-        assert.match(tile, /\bsize-9\b/, 'the tile stopped filling the row height');
-        assert.match(tile, /\bborder\b/, 'the narrow rail lost its bordered tile');
+        assert.ok(tile.includes('size-9'), 'the tile stopped filling the row height');
+        assert.ok(tile.includes('border'), 'the narrow rail lost its bordered tile');
         assert.ok(list.includes("'relative w-full min-w-0 py-0 pl-0 font-bold'"), 'the row put padding back between tile and outline');
         assert.ok(!/min-h-10/.test(list), 'the pinned pair grew taller than the tile');
     });

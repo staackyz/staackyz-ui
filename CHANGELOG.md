@@ -8,6 +8,11 @@
   borda; ao alargar, o lado direito dele abre para dentro do cartão no relógio do trilho (`nav-rail-tile` em
   `motion.css`). O ícone fica na mesma coluna dos itens de baixo e não muda de lugar ao acender nem ao alargar (T-452
   do CMMS)
+- O item aceso da lista ganha a mesma forma: contorno na cor da marca em volta da linha e o quadrado do ícone como a
+  ponta cheia. O item apagado continua só com o quadrado cinza de 32px, que agora mora numa caixa de 36px rente à
+  linha com borda clara de 2px: ao acender a borda pega a cor e o quadrado cresce até o contorno sem sair do lugar. No
+  trilho estreito o item aceso segue o quadrado redondo de sempre. A linha começa 6px mais à direita (onde começa o
+  quadrado), então o fundo do hover também
 
 ## v0.1.4, 2026-11-20
 
