@@ -777,6 +777,16 @@
     transition: opacity var(--mov-longo) var(--rail-curve);
 }
 
+/* The shortcut tile opens its right corners into the card on the clip's clock, its colours keep the quick touch */
+.nav-rail .nav-rail-tile {
+    transition:
+        background-color var(--mov-curto) var(--mov-volta),
+        border-color var(--mov-curto) var(--mov-volta),
+        color var(--mov-curto) var(--mov-volta),
+        box-shadow var(--mov-curto) var(--mov-volta),
+        border-radius var(--mov-longo) var(--rail-curve);
+}
+
 .nav-rail[data-expanded] .nav-rail-edge,
 .nav-rail[data-expanded] .nav-rail-divider {
     opacity: 0;
@@ -807,6 +817,7 @@
 @media (prefers-reduced-motion: reduce) {
     .nav-rail,
     .nav-rail .nav-rail-fade,
+    .nav-rail .nav-rail-tile,
     .nav-rail-edge,
     .nav-rail .nav-rail-divider,
     .nav-chevron {

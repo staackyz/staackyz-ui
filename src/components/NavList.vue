@@ -155,6 +155,12 @@ const shortcutCardClass = (shortcut: NavShortcut) => {
         : 'border-primary/25 bg-card shadow-sm group-hover:border-primary/60 group-focus-visible:border-primary/60';
 };
 
+// Flush on the card's left edge and as tall as the row, so the lit tile is the filled end of the outline and not a box inside it
+const SHORTCUT_TILE = 'nav-rail-tile relative flex size-9 shrink-0 items-center justify-center border';
+
+// Alone on the narrow rail the tile is a whole rounded square, wide its right side opens into the card like one segment of a pill
+const shortcutTileShape = computed(() => (props.compact ? 'rounded-lg' : 'rounded-l-lg rounded-r-none'));
+
 const shortcutTileClass = (shortcut: NavShortcut) => {
     if (litShortcut(shortcut)) return 'border-primary bg-primary text-primary-foreground';
 
@@ -260,11 +266,13 @@ const shortcutClass = (shortcut: NavShortcut) => {
                 </div>
 
                 <!-- Stacked narrow and peeking, one row pinned, centred in a block of the stacked height so pinning moves nothing below -->
+                <!-- Inset so the taller flush tile keeps its centre on the column of the item icons below -->
                 <ul
                     v-else-if="nav.shortcuts.length"
                     ref="shortcutList"
                     class="grid"
                     :class="[
+                        'pl-1.5',
                         pairWide ? 'grid-cols-[auto_minmax(0,1fr)] content-center gap-1.5' : 'grid-cols-1 content-start gap-0.5',
                         { 'h-[4.625rem]': nav.shortcuts.length > 1 },
                     ]"
@@ -282,8 +290,8 @@ const shortcutClass = (shortcut: NavShortcut) => {
                                     :class="
                                         cn(
                                             ITEM,
-                                            'relative w-full min-w-0 font-bold',
-                                            pairWide ? 'min-h-10 gap-2 pr-2.5' : 'min-h-9',
+                                            'relative w-full min-w-0 py-0 pl-0 font-bold',
+                                            pairWide ? 'gap-2 pr-2.5' : 'gap-2.5',
                                             shortcut.tone === 'tint' || litShortcut(shortcut) ? 'text-primary' : 'text-foreground',
                                         )
                                     "
@@ -295,7 +303,7 @@ const shortcutClass = (shortcut: NavShortcut) => {
                                         class="nav-rail-fade pointer-events-none absolute inset-0 rounded-lg border"
                                         :class="shortcutCardClass(shortcut)"
                                     />
-                                    <span :class="['relative border', TILE, shortcutTileClass(shortcut)]">
+                                    <span :class="[SHORTCUT_TILE, shortcutTileShape, shortcutTileClass(shortcut)]">
                                         <component :is="shortcut.icon" class="h-4 w-4" />
                                         <span v-if="pendingOf(shortcut.href)" :class="PENDING" data-nav-pending aria-hidden="true">
                                             {{ pendingText(pendingOf(shortcut.href)) }}

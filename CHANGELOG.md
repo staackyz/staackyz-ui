@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.1.5, 2026-11-22
+
+- O atalho do trilho (Início e o par ao lado) vira uma forma só: o quadrado do ícone encosta na borda esquerda do
+  contorno, com a altura da linha e o mesmo raio do canto, sem o vão que separava o quadrado do contorno. Aceso, ele é
+  a ponta cheia do contorno, como um segmento de pílula. No trilho estreito o quadrado continua sozinho, redondo e com
+  borda; ao alargar, o lado direito dele abre para dentro do cartão no relógio do trilho (`nav-rail-tile` em
+  `motion.css`). O ícone fica na mesma coluna dos itens de baixo e não muda de lugar ao acender nem ao alargar (T-452
+  do CMMS)
+
 ## v0.1.4, 2026-11-20
 
 - `Button` `outline` passa a ser neutro: borda de campo, fundo do cartão, texto normal e o fundo `muted` no hover e no
