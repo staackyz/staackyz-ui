@@ -1,5 +1,24 @@
 # Changelog
 
+## v0.1.5, 2026-11-22
+
+- O atalho do trilho (Início e o par ao lado) vira uma forma só: o quadrado do ícone encosta na borda esquerda do
+  contorno, com a altura da linha e o mesmo raio do canto, sem o vão que separava o quadrado do contorno. Aceso, ele é
+  a ponta cheia do contorno, como um segmento de pílula. No trilho estreito o quadrado continua sozinho, redondo e com
+  borda; ao alargar, o lado direito dele abre para dentro do cartão no relógio do trilho (`nav-rail-tile` em
+  `motion.css`). O ícone fica na mesma coluna dos itens de baixo e não muda de lugar ao acender nem ao alargar (T-452
+  do CMMS)
+- O item aceso da lista ganha a mesma forma: contorno na cor da marca em volta da linha e o quadrado do ícone como a
+  ponta cheia. O item apagado continua só com o quadrado cinza de 32px, que agora mora numa caixa de 36px rente à
+  linha com borda clara de 2px: ao acender a borda pega a cor e o quadrado cresce até o contorno sem sair do lugar. No
+  trilho estreito o item aceso segue o quadrado redondo de sempre. A linha começa 6px mais à direita (onde começa o
+  quadrado), então o fundo do hover também
+- A tela com `ScreenFrame` não estica mais a página: o `main` que segura a moldura corta o que passa dele
+  (`overflow: clip`) e a área que rola (`.screen-scroll`) passa a ser `position: relative`, então um filho absoluto no
+  fundo da lista (o resumo `sr-only` de cada gráfico do painel do Console) fica preso nela em vez de ser posto contra o
+  `main`. No WebView2 do app do Windows isso virava uma segunda barra de rolagem (T-449 do CMMS). Com esta versão o CMMS
+  pode tirar o `has-[.screen-frame]:overflow-clip` local do `components/ui/sidebar/SidebarInset.vue`
+
 ## v0.1.4, 2026-11-20
 
 - `Button` `outline` passa a ser neutro: borda de campo, fundo do cartão, texto normal e o fundo `muted` no hover e no

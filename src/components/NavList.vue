@@ -109,39 +109,53 @@ const pendingText = (count: number) => (count > 99 ? '99+' : String(count));
 // The narrow rail keeps the lit and hover state on the tile, a row fill cut at the rail edge would end square on one side
 // The same row height in both shapes, so widening the rail never moves the item under the pointer
 const ITEM = 'mov-toque group flex min-h-9 items-center gap-3 rounded-lg px-2 py-0.5 text-sm font-medium outline-none transition-colors';
-const TILE = 'flex size-8 shrink-0 items-center justify-center rounded-md transition-colors';
+// The box is the shortcut tile's 36px, flush on the row's left edge, the clear 2px border keeps an unlit tile the 32px square it always was
+// Lit and wide the border takes the fill, so the tile grows into the filled end of the outline without moving
+const TILE = 'nav-rail-tile relative flex size-9 shrink-0 items-center justify-center border-2 bg-clip-padding transition-colors';
+// The row starts at the tile box, which is where the outline of a lit row begins
+const ITEM_ROW = 'relative ml-1.5 gap-2.5 py-0 pl-0';
 // The counter sits on the icon's corner, so it reads the same on the narrow rail, the wide one and the drawer
 const PENDING =
     'pointer-events-none absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-warning px-1 text-2xs font-bold leading-none text-white shadow-sm';
 
+// A lit row is drawn by its card, the same outline as the lit shortcut, so the row itself keeps only its text
 const itemClass = (item: NavItem) => {
     const lit = isCurrent(item);
 
     if (props.compact) return item.tone === 'danger' ? 'text-destructive' : lit ? 'font-semibold text-primary' : 'text-foreground/80';
 
     if (item.tone === 'danger') {
-        return lit ? 'bg-destructive/10 font-semibold text-destructive' : 'text-destructive hover:bg-destructive/10 focus-visible:bg-destructive/10';
+        return lit ? 'font-semibold text-destructive' : 'text-destructive hover:bg-destructive/10 focus-visible:bg-destructive/10';
     }
 
-    return lit ? 'bg-primary/10 font-semibold text-primary' : 'text-foreground/80 hover:bg-accent hover:text-foreground focus-visible:bg-accent';
+    return lit ? 'font-semibold text-primary' : 'text-foreground/80 hover:bg-accent hover:text-foreground focus-visible:bg-accent';
 };
+
+// It fades with the names like the shortcut card, so the narrow rail keeps the lone rounded tile
+const itemCardClass = (item: NavItem) => (item.tone === 'danger' ? 'border-destructive bg-destructive/10' : 'border-primary bg-primary/10');
+
+const tileShape = (item: NavItem) => (isCurrent(item) && !props.compact ? 'rounded-l-lg rounded-r-none' : 'rounded-lg');
 
 const tileClass = (item: NavItem) => {
     const lit = isCurrent(item);
+    const edge = lit && !props.compact;
 
     if (item.tone === 'danger') {
-        if (lit) return 'bg-destructive text-destructive-foreground';
+        if (lit)
+            return edge
+                ? 'border-destructive bg-destructive text-destructive-foreground'
+                : 'border-transparent bg-destructive text-destructive-foreground';
 
         return props.compact
-            ? 'bg-destructive/10 text-destructive group-hover:bg-destructive/20 group-focus-visible:bg-destructive/20'
-            : 'bg-destructive/10 text-destructive';
+            ? 'border-transparent bg-destructive/10 text-destructive group-hover:bg-destructive/20 group-focus-visible:bg-destructive/20'
+            : 'border-transparent bg-destructive/10 text-destructive';
     }
 
-    if (lit) return 'bg-primary text-primary-foreground';
+    if (lit) return edge ? 'border-primary bg-primary text-primary-foreground' : 'border-transparent bg-primary text-primary-foreground';
 
     return props.compact
-        ? 'bg-muted text-muted-foreground group-hover:bg-accent group-hover:text-primary group-focus-visible:bg-accent group-focus-visible:text-primary'
-        : 'bg-muted text-muted-foreground group-hover:text-primary';
+        ? 'border-transparent bg-muted text-muted-foreground group-hover:bg-accent group-hover:text-primary group-focus-visible:bg-accent group-focus-visible:text-primary'
+        : 'border-transparent bg-muted text-muted-foreground group-hover:text-primary';
 };
 
 const litShortcut = (shortcut: NavShortcut) => path.value === normalizePath(shortcut.href);
@@ -154,6 +168,12 @@ const shortcutCardClass = (shortcut: NavShortcut) => {
         ? 'border-primary/40 bg-primary/10 shadow-sm group-hover:border-primary/70 group-focus-visible:border-primary/70'
         : 'border-primary/25 bg-card shadow-sm group-hover:border-primary/60 group-focus-visible:border-primary/60';
 };
+
+// Flush on the card's left edge and as tall as the row, so the lit tile is the filled end of the outline and not a box inside it
+const SHORTCUT_TILE = 'nav-rail-tile relative flex size-9 shrink-0 items-center justify-center border';
+
+// Alone on the narrow rail the tile is a whole rounded square, wide its right side opens into the card like one segment of a pill
+const shortcutTileShape = computed(() => (props.compact ? 'rounded-lg' : 'rounded-l-lg rounded-r-none'));
 
 const shortcutTileClass = (shortcut: NavShortcut) => {
     if (litShortcut(shortcut)) return 'border-primary bg-primary text-primary-foreground';
@@ -260,11 +280,13 @@ const shortcutClass = (shortcut: NavShortcut) => {
                 </div>
 
                 <!-- Stacked narrow and peeking, one row pinned, centred in a block of the stacked height so pinning moves nothing below -->
+                <!-- Inset so the taller flush tile keeps its centre on the column of the item icons below -->
                 <ul
                     v-else-if="nav.shortcuts.length"
                     ref="shortcutList"
                     class="grid"
                     :class="[
+                        'pl-1.5',
                         pairWide ? 'grid-cols-[auto_minmax(0,1fr)] content-center gap-1.5' : 'grid-cols-1 content-start gap-0.5',
                         { 'h-[4.625rem]': nav.shortcuts.length > 1 },
                     ]"
@@ -282,8 +304,8 @@ const shortcutClass = (shortcut: NavShortcut) => {
                                     :class="
                                         cn(
                                             ITEM,
-                                            'relative w-full min-w-0 font-bold',
-                                            pairWide ? 'min-h-10 gap-2 pr-2.5' : 'min-h-9',
+                                            'relative w-full min-w-0 py-0 pl-0 font-bold',
+                                            pairWide ? 'gap-2 pr-2.5' : 'gap-2.5',
                                             shortcut.tone === 'tint' || litShortcut(shortcut) ? 'text-primary' : 'text-foreground',
                                         )
                                     "
@@ -295,7 +317,7 @@ const shortcutClass = (shortcut: NavShortcut) => {
                                         class="nav-rail-fade pointer-events-none absolute inset-0 rounded-lg border"
                                         :class="shortcutCardClass(shortcut)"
                                     />
-                                    <span :class="['relative border', TILE, shortcutTileClass(shortcut)]">
+                                    <span :class="[SHORTCUT_TILE, shortcutTileShape, shortcutTileClass(shortcut)]">
                                         <component :is="shortcut.icon" class="h-4 w-4" />
                                         <span v-if="pendingOf(shortcut.href)" :class="PENDING" data-nav-pending aria-hidden="true">
                                             {{ pendingText(pendingOf(shortcut.href)) }}
@@ -362,10 +384,16 @@ const shortcutClass = (shortcut: NavShortcut) => {
                                                     :data-nav-tone="item.tone"
                                                     :data-nav-moved="item.moved ? '' : undefined"
                                                     :aria-current="isCurrent(item) ? 'page' : undefined"
-                                                    :class="[ITEM, itemClass(item)]"
+                                                    :class="cn(ITEM, ITEM_ROW, itemClass(item))"
                                                     @click="emit('navigate')"
                                                 >
-                                                    <span :class="['relative', TILE, tileClass(item)]">
+                                                    <span
+                                                        v-if="isCurrent(item)"
+                                                        aria-hidden="true"
+                                                        class="nav-rail-fade pointer-events-none absolute inset-0 rounded-lg border"
+                                                        :class="itemCardClass(item)"
+                                                    />
+                                                    <span :class="[TILE, tileShape(item), tileClass(item)]">
                                                         <component :is="item.icon" v-if="item.icon" class="h-4 w-4" />
                                                         <span v-if="pendingOf(item.href)" :class="PENDING" data-nav-pending aria-hidden="true">
                                                             {{ pendingText(pendingOf(item.href)) }}
@@ -374,7 +402,7 @@ const shortcutClass = (shortcut: NavShortcut) => {
                                                     <span v-if="pendingOf(item.href)" class="sr-only">{{
                                                         labels.pending(pendingOf(item.href))
                                                     }}</span>
-                                                    <span class="nav-rail-fade min-w-0 flex-1 truncate">{{ item.title }}</span>
+                                                    <span class="nav-rail-fade relative min-w-0 flex-1 truncate">{{ item.title }}</span>
                                                 </component>
                                             </TooltipTrigger>
                                             <TooltipContent side="right" data-nav-tip>{{ item.title }}</TooltipContent>
